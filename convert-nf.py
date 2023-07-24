@@ -47,6 +47,8 @@ def main():
     params = read_params()
     logger = get_logger()
 
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+
     if os.path.exists(params.output_dir) and not params.force_create:
         logger.error(
             'Output directory exist. Please remove it before or choose other directory')
@@ -56,7 +58,7 @@ def main():
             os.mkdir(params.output_dir)
         except:
             pass
-        copy_tree('./template', params.output_dir)
+        copy_tree(f'{script_dir}/template', params.output_dir)
 
     with open(params.input_file) as f:
         data = json.load(f)
