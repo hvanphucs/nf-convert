@@ -43,6 +43,36 @@ def read_params():
     return args
 
 
+def find_execution_steps(graph):
+    execution_steps = []
+    visited_nodes = set()
+
+    def dfs(node):
+        if node["id"] not in visited_nodes:
+            visited_nodes.add(node["id"])
+            inputs = []
+            for input_node in node["inputs"] or []:
+                if input_node.get("links", None):
+                    inputs.extend(input_node["links"])
+            for input_link in inputs:
+                from_node = get_node_by_id(graph, input_link["node_id_ref"])
+                dfs(from_node)
+            execution_steps.append(node)
+
+    def get_node_by_id(graph, node_id):
+        for pipeline in graph["pipelines"]:
+            for node in pipeline["nodes"]:
+                if node["id"] == node_id:
+                    return node
+
+    for pipeline in graph["pipelines"]:
+        for node in pipeline["nodes"]:
+            if node["type"] == "execution_node":
+                dfs(node)
+
+    return execution_steps
+
+
 def main():
     params = read_params()
     logger = get_logger()
@@ -64,7 +94,12 @@ def main():
         data = json.load(f)
         pipeline_data = data.get('pipelines')
         logger.info(f'Found  {len(pipeline_data)} pipeline data')
-        pipeline_data = pipeline_data[0].get('nodes', [])
+        try:
+            pipeline_data = find_execution_steps(data)
+        except Exception as e:
+            print('Failed to load pipeline', e)
+            pipeline_data = pipeline_data[0].get('nodes', [])
+            exit(1)
 
     with open(f'{params.output_dir}/template.nf') as f:
         main_nf = f.read()
