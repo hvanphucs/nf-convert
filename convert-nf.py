@@ -77,15 +77,15 @@ def main():
 
         node_params = node.get('app_data', {})
         for (key, value) in node_params.items():
-            print(f'{key}={value}')
+            # print(f'{key}={value}')
             pass
 
-        node_label = node.get('label', None)
+        node_label = node_params.get('label', None)
         if node_label == None:
-            node_label = "step_" + node_id[0:3] + \
+            node_label = "step" + node_id[0:3] + \
                 node_params.get('id', 'UnLabeled')
         else:
-            node_label = "step_" + node_id[0:3] + \
+            node_label = "step" + node_id[0:3] + \
                 node_label
 
         node_name = to_camel_case(node_label)
