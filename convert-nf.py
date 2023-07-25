@@ -117,9 +117,9 @@ def main():
 
         node_label = node_params.get('label', None)
         if node_label == None:
-            node_label = "UnLabeled" + node_id[0:3]
+            node_label = "UnLabeled" + "_" + node_id[0:3]
         else:
-            node_label = node_label + node_id[0:3]
+            node_label = node_label + "_" + node_id[0:3]
 
         node_name = to_camel_case(node_label)
         node_filename = node_params.get('filename', None)
