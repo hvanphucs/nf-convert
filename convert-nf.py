@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import shutil
 from distutils.dir_util import copy_tree
 
 
@@ -279,6 +280,8 @@ def main():
         os.remove(f'{params.output_dir}/template.nf')
     except:
         pass
+
+    shutil.copy(params.input_file, params.output_dir)
 
     logger.info(f'Finished processing. Output: {params.output_dir}')
 
