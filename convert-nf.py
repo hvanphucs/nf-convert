@@ -139,8 +139,8 @@ def main():
             f'params.{node_name}_filename="{node_filename}"',
             f'params.{node_name}_runtime ="{node_runtime}"',
             f'params.{node_name}_cpu="{node_cpu}"'
-
         ]
+
         for i in range(len(node_input)):
             node_param_nf.append(
                 f'params.{node_name}_input{i+1}="{node_input[i]}"')
@@ -186,6 +186,20 @@ def main():
             PROCESS_SCRIPT = f'''
             echo 123 > output1.txt
             echo 123 > output2.txt
+            '''
+            if node_filename.endswith(".ipynb"):
+
+                filename = os.path.basename(node_filename)
+
+                PROCESS_SCRIPT = f'''
+                    papermill \
+                        -k python3 \
+                        --log-output --log-level DEBUG \
+                        --cwd {params.output_dir} \
+                        --request-save-on-cell-execute \
+                        --autosave-cell-every 10 \
+                        --progress-bar \
+                        {node_filename} {params.output_dir}/run_{filename}
             '''
 
             content = '''
