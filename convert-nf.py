@@ -322,7 +322,7 @@ def main():
                         else:
                             fnotebook.close()
                             raise Exception(
-                                "Unknown language: {} for this notebook")
+                                "Unknown language for this notebook")
 
                 PROCESS_SCRIPT = [
                     "papermill",
