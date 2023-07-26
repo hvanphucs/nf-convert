@@ -210,7 +210,7 @@ def main():
                     "--log-output --log-level DEBUG  --request-save-on-cell-execute",
                     "--autosave-cell-every 10",
                     "--progress-bar",
-                    "-k", "test2",
+                    "-k", "no-kernel",
                     " ".join(node_params),
                     node_filename,
                     output_notebook
