@@ -73,6 +73,16 @@ def find_execution_steps(graph):
     return execution_steps
 
 
+def get_home():
+    return os.path.expanduser('~')
+
+
+def get_full_path(path):
+    if not path.startswith('/'):
+        return get_home() + "/" + path
+    return path
+
+
 def main():
     params = read_params()
     logger = get_logger()
@@ -130,6 +140,9 @@ def main():
         node_input = node_params.get('dependencies', [])
         node_output = node_params.get('output', [])
         node_envar = node_params.get('env_vars', [])
+
+        if node_filename is not None:
+            node_filename = get_full_path(node_filename)
 
         process_name = node_name.upper()
         node_import_nf.append(
