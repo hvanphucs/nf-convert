@@ -10,9 +10,94 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 from distutils.dir_util import copy_tree
 
-from .kernel import prepare_kernel
+
+def get_kernel_list():
+    kernel_data = []
+    try:
+        out = subprocess.check_output('jupyter kernelspec list', shell=True)
+        kernel_list = out.decode("utf-8")
+        if "Available kernels" in kernel_list:
+            kernel_list = [i for i in kernel_list.split("\n") if len(
+                i.strip()) > 0 and "Available kernels:" not in i]
+
+            for kernel in kernel_list:
+                try:
+                    arr = [i for i in kernel.split(" ") if len(i) > 0]
+                    with open(f"{arr[1]}/kernel.json") as f:
+                        data = json.load(f)
+                        execuble = data['argv'][0]
+                    kernel_data.append(dict(
+                        name=arr[0],
+                        path=arr[1],
+                        detail=data,
+                        location=execuble
+                    ))
+                except:
+                    pass
+    except:
+        pass
+
+    return kernel_data
+
+
+def check_exist_kernel(env_location, kernel_type):
+    r_kernel_exist = []
+    py_kernel_exist = []
+
+    if not os.path.exists(env_location):
+        raise FileNotFoundError("The environment does not exist")
+
+    kernel_list = get_kernel_list()
+    for kernel in kernel_list:
+        print(kernel["location"])
+        if env_location in kernel["location"]:
+            if "lib/R/bin/R" in kernel["location"]:
+                r_kernel_exist.append(kernel["name"])
+            if "/bin/python" in kernel["location"]:
+                py_kernel_exist.append(kernel["name"])
+
+    if "python" in kernel_type:
+        return py_kernel_exist
+    elif kernel_type == "r":
+        return r_kernel_exist
+    else:
+        raise Exception("The kernel is not yet supported")
+
+
+def prepare_kernel(env_location, kernel_type):
+    exist = check_exist_kernel(env_location, kernel_type)
+    if len(exist) > 0:
+        return exist[0], env_location
+
+    if os.path.exists(env_location) and len(exist) == 0:
+        try:
+            kernel_name = env_location.split(
+                "/.conda/envs/")[1] + f"_{kernel_type}"
+        except:
+            raise Exception("Enviroment path is invalid")
+
+        if "python" in kernel_type:
+            print("Install ipykernel in this environment")
+            procc1 = subprocess.check_output(
+                f'''mamba install -p {env_location} -c anaconda ipykernel''', shell=True)
+            procc2 = subprocess.check_output(
+                f'''/miniconda/user/bin/conda run -p {env_location} python -m ipykernel install --name "{kernel_name}" --display-name "{kernel_name}" --user''', shell=True)
+        elif kernel_type == "r":
+            print("Install r-irkernel in this environment")
+            procc1 = subprocess.check_output(
+                f'''mamba install -p {env_location} -c conda-forge r-irkernel''', shell=True)
+            procc2 = subprocess.check_output(
+                f'''/miniconda/user/bin/conda run -p {env_location} Rscript -e "IRkernel::installspec(name='{kernel_name}', displayname='{kernel_name}', user=TRUE)"''', shell=True)
+    else:
+        raise Exception("Could prepare this kernel")
+
+    return kernel_name, env_location
+
+
+# prepare_kernel("/home/ub-141839-4ad134d845bed82/.conda/envs/test3", "python")
 
 
 def get_logger():
