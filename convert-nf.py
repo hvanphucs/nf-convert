@@ -280,7 +280,7 @@ def main():
     except:
         pass
 
-    logger.info(f'Finished processing. Ouput: {params.output_dir}')
+    logger.info(f'Finished processing. Output: {params.output_dir}')
 
 
 if __name__ == '__main__':
