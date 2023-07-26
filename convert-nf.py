@@ -79,7 +79,7 @@ def prepare_kernel(env_location, kernel_type):
         except:
             raise Exception("Enviroment path is invalid")
 
-        logging.info(
+        print(
             f"Installing kernel: {kernel_type} with name {kernel_name}")
 
         if "python" in kernel_type:
@@ -312,12 +312,12 @@ def main():
                         if language == "R":
                             kernel_name, env_location = prepare_kernel(
                                 node_runtime, "python")
-                            logging.info(
+                            logger.info(
                                 f"Notebook using kernel: {kernel_name} with environment {env_location}")
                         elif language == "Python":
                             kernel_name, _ = prepare_kernel(
                                 node_runtime, "r")
-                            logging.info(
+                            logger.info(
                                 f"Notebook using kernel: {kernel_name} with environment {env_location}")
                         else:
                             fnotebook.close()
