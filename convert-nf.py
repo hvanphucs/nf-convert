@@ -107,6 +107,7 @@ def main():
     node_param_nf = []
     node_import_nf = []
     node_workflow_nf = []
+
     for node in pipeline_data:
         node_id = node.get('id', None)
 
@@ -145,7 +146,7 @@ def main():
                 f'params.{node_name}_input{i+1}="{node_input[i]}"')
         for i in range(len(node_output)):
             node_param_nf.append(
-                f'params.{node_name}_output{i+1}="{node_input[i]}"')
+                f'params.{node_name}_output{i+1}="{node_output[i]}"')
         node_param_nf.append("\n")
         '''
             id = a4196a91-f593-45f8-8384-49d2a220288b)
