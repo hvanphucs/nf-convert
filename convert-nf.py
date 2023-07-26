@@ -203,7 +203,7 @@ def main():
                     papermill \
                         -k python3 \
                         --log-output --log-level DEBUG \
-                        --cwd {params.output_dir} \
+                        --cwd $pwd \
                         --request-save-on-cell-execute \
                         --autosave-cell-every 10 \
                         --progress-bar \
