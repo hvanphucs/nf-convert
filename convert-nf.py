@@ -200,7 +200,7 @@ def main():
                 output_notebook = f"run_{filename}"
                 node_output.append(output_notebook)
 
-                params = [
+                node_params = [
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
                 PROCESS_SCRIPT = [
@@ -210,7 +210,7 @@ def main():
                     "--autosave-cell-every 10",
                     "--progress-bar",
                     "-k", "python3",
-                    " ".join(params),
+                    " ".join(node_params),
                     node_filename,
                     output_notebook
                 ]
