@@ -79,8 +79,11 @@ def prepare_kernel(env_location, kernel_type):
         except:
             raise Exception("Enviroment path is invalid")
 
+        logging.info(
+            f"Installing kernel: {kernel_type} with name {kernel_name}")
+
         if "python" in kernel_type:
-            print("Install ipykernel in this environment")
+
             procc1 = subprocess.check_output(
                 f'''mamba install -p {env_location} -c anaconda ipykernel''', shell=True)
             procc2 = subprocess.check_output(
@@ -300,18 +303,22 @@ def main():
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
                 if node_group == 'notebook-node':
-                    with open(node_filename) as f:
-                        notebook = json.load(f)
+                    with open(node_filename) as fnotebook:
+                        notebook = json.load(fnotebook)
                         language = notebook.get(
                             'metadata', {}).get('kernelspec', {}).get('language', {})
                         logger.info(
                             f'[Validate notebook] Detected language:  {language}')
                         if language == "R":
-                            kernel_name, _ = prepare_kernel(
+                            kernel_name, env_location = prepare_kernel(
                                 node_runtime, "python")
+                            logging.info(
+                                f"Notebook using kernel: {kernel_name} with environment {env_location}")
                         elif language == "Python":
                             kernel_name, _ = prepare_kernel(
                                 node_runtime, "r")
+                            logging.info(
+                                f"Notebook using kernel: {kernel_name} with environment {env_location}")
                         else:
                             f.close()
                             raise Exception(
