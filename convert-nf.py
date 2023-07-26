@@ -12,6 +12,8 @@ import re
 import shutil
 from distutils.dir_util import copy_tree
 
+from .kernel import prepare_kernel
+
 
 def get_logger():
     FORMAT = '%(asctime)s %(message)s'
@@ -121,6 +123,11 @@ def main():
 
     for node in pipeline_data:
         node_id = node.get('id', None)
+        node_type = node.get('type', None)  # execution_node
+        node_group = node.get('op', None)  # notebook-node
+
+        if node_type != 'execution_node' or node_group is None:
+            continue
 
         node_params = node.get('app_data', {})
         for (key, value) in node_params.items():
@@ -204,13 +211,28 @@ def main():
                 node_params = [
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
+                if node_group == 'notebook-node':
+                    with open(node_filename) as f:
+                        notebook = json.load(f)
+                        language = notebook.get(
+                            'metadata', {}).get('kernelspec', {}).get('language', {})
+                        if language == "R":
+                            kernel_name, _ = prepare_kernel(
+                                node_params, "python")
+                        elif language == "Python":
+                            kernel_name, _ = prepare_kernel(
+                                node_params, "r")
+                        else:
+                            raise Exception(
+                                "Unknown language: {} for this notebook")
+
                 PROCESS_SCRIPT = [
                     "papermill",
                     "--cwd", ".",
                     "--log-output --log-level DEBUG  --request-save-on-cell-execute",
                     "--autosave-cell-every 10",
                     "--progress-bar",
-                    "-k", node_runtime,
+                    "-k", kernel_name,
                     " ".join(node_params),
                     node_filename,
                     output_notebook
