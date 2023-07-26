@@ -189,20 +189,15 @@ def main():
                 f"path input{i+1}" for i in range(len(node_input))
             ])
 
-            # PROCESS_OUTPUT = "\n".join([
-            #     f"path output{i+1}" for i in range(len(node_output))
-            # ])
-            PROCESS_OUTPUT = "\n".join([
-                f'path "{node_output[i]}"' for i in range(len(node_output))
-            ])
-
             PROCESS_SCRIPT = f'''
             echo 123 > output1.txt
             echo 123 > output2.txt
             '''
+
             if node_filename.endswith(".ipynb"):
 
                 filename = os.path.basename(node_filename)
+                node_output.append(f'run_{filename}')
 
                 PROCESS_SCRIPT = f'''
                     papermill \
@@ -212,9 +207,11 @@ def main():
                         --request-save-on-cell-execute \
                         --autosave-cell-every 10 \
                         --progress-bar \
-                        {node_filename} {params.output_dir}/run_{filename}
+                        {node_filename} run_{filename}
             '''
-
+            PROCESS_OUTPUT = "\n".join([
+                f'path "{node_output[i]}"' for i in range(len(node_output))
+            ])
             content = '''
             process PROCESS_NAME {
                 tag { PROCESS_TAG }
