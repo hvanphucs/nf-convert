@@ -320,7 +320,7 @@ def main():
                             logging.info(
                                 f"Notebook using kernel: {kernel_name} with environment {env_location}")
                         else:
-                            f.close()
+                            fnotebook.close()
                             raise Exception(
                                 "Unknown language: {} for this notebook")
 
