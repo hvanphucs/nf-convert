@@ -197,18 +197,24 @@ def main():
             if node_filename.endswith(".ipynb"):
 
                 filename = os.path.basename(node_filename)
-                node_output.append(f'run_{filename}')
+                output_notebook = f"run_{filename}"
+                node_output.append(output_notebook)
 
-                PROCESS_SCRIPT = f'''
-                    papermill \
-                        -k python3 \
-                        --log-output --log-level DEBUG \
-                        --cwd . \
-                        --request-save-on-cell-execute \
-                        --autosave-cell-every 10 \
-                        --progress-bar \
-                        {node_filename} run_{filename}
-            '''
+                params = [
+                    f"-p {param['key']} '{param['value']}'" for param in node_envar]
+
+                PROCESS_SCRIPT = [
+                    "papermill",
+                    "--cwd", ".",
+                    "--log-output --log-level DEBUG  --request-save-on-cell-execute",
+                    "--autosave-cell-every 10",
+                    "--progress-bar",
+                    " ".join(params),
+                    node_filename,
+                    output_notebook
+                ]
+                PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
+
             PROCESS_OUTPUT = "\n".join([
                 f'path "{node_output[i]}"' for i in range(len(node_output))
             ])
