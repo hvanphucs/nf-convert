@@ -293,6 +293,9 @@ def main():
                 output_notebook = f"run_{filename}"
                 node_output.append(output_notebook)
 
+                logger.info(
+                    f'[Validate notebook] {filename}')
+
                 node_params = [
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
@@ -301,6 +304,8 @@ def main():
                         notebook = json.load(f)
                         language = notebook.get(
                             'metadata', {}).get('kernelspec', {}).get('language', {})
+                        logger.info(
+                            f'[Validate notebook] Detected language:  {language}')
                         if language == "R":
                             kernel_name, _ = prepare_kernel(
                                 node_runtime, "python")
@@ -308,6 +313,7 @@ def main():
                             kernel_name, _ = prepare_kernel(
                                 node_runtime, "r")
                         else:
+                            f.close()
                             raise Exception(
                                 "Unknown language: {} for this notebook")
 
