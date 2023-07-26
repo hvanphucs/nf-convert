@@ -303,10 +303,10 @@ def main():
                             'metadata', {}).get('kernelspec', {}).get('language', {})
                         if language == "R":
                             kernel_name, _ = prepare_kernel(
-                                node_params, "python")
+                                node_runtime, "python")
                         elif language == "Python":
                             kernel_name, _ = prepare_kernel(
-                                node_params, "r")
+                                node_runtime, "r")
                         else:
                             raise Exception(
                                 "Unknown language: {} for this notebook")
