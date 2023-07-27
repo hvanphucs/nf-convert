@@ -441,7 +441,7 @@ def main():
                     # find node in upstream_inputNodes
                     upstream_node = get_node_by_id(pipeline_data,
                                                    upstream_node["node_id_ref"])
-                    if upstream_node['port_id_ref'] is not None:
+                    if upstream_node is not None:
                         upstream_node_list.append(upstream_node)
 
         except Exception as e:
