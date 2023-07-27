@@ -8,21 +8,14 @@ import shutil
 import subprocess
 from distutils.dir_util import copy_tree
 
-logger = logging.getLogger("validate").addHandler(logging.NullHandler())
+logger = logging.getLogger("validate")
 logger.setLevel(logging.INFO)
 
 
 def configure_logging():
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-    # Setup file logging as well
-    # fh = logging.FileHandler(LOG_FILENAME)
-    # fh.setLevel(logging.DEBUG)
-    # fh.setFormatter(formatter)
-    # logger.addHandler(fh)
+    logger.setFormatter(formatter)
 
 
 def get_kernel_list():
