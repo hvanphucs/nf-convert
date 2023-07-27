@@ -241,7 +241,7 @@ def main():
 
         process_name = node_name.upper()
         node_import_nf.append(
-            'include  { process_name } from "./modules/node_name"'.replace('process_name', process_name).replace("node_name", node_name))
+            'include  { PROCESS_NAME } from "./modules/NODE_NAME"'.replace('PROCESS_NAME', process_name).replace("NODE_NAME", node_name))
 
         node_param_nf += [
             f'params.{node_name}_filename="{node_filename}"',
