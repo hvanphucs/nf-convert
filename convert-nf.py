@@ -474,14 +474,15 @@ def main():
             raw_chanel = True
             try:
                 for upstream_node in upstream_node_list:
-                    for i in range(len(upstream_node["output"])):
-                        upstream_node_output = upstream_node["output"][i]
+                    for j in range(len(upstream_node["output"])):
+                        upstream_node_output = upstream_node["output"][j]
                         if node_input_file == upstream_node_output:
+                            logging.info(f'Match processing {node_input_file}')
                             # input file in from previous step
                             upstream_node_process_name = get_node_process_label(
                                 upstream_node)
                             node_chanel_nf.append(
-                                f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{i+1}.collect()')
+                                f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{j+1}.collect()')
 
                             raw_chanel = False
                             break
