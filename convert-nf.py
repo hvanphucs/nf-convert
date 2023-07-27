@@ -356,7 +356,7 @@ def main():
                 raise Exception(
                     "Invalid node group: notebook-node, r-node, python-node")
 
-                PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
+            PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
             PROCESS_OUTPUT = "\n".join([
                 f'path "{node_output[i]}"' for i in range(len(node_output))
