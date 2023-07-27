@@ -366,8 +366,8 @@ def main():
 
             ENVIRONMENT = ""
             if len(node_envar) > 0:
-                ENVIRONMENT = "env:\n" + "\n".join(
-                    [f"{e['key']}={e['value']}" for e in node_envar])
+                ENVIRONMENT = "\n".join(
+                    [f"{e['key']}='{e['value']}'" for e in node_envar])
 
             LIMIT_MEMORY = ""
             if node_memory:
@@ -375,7 +375,7 @@ def main():
 
             LIMIT_CPU = ""
             if node_cpu:
-                LIMIT_MEMORY = f"cpus {node_cpu}"
+                LIMIT_CPU = f"cpus {node_cpu}"
 
             content = '''
             process PROCESS_NAME {
@@ -387,7 +387,6 @@ def main():
                 LIMIT_MEMORY
                 LIMIT_CPU
 
-                ENVIRONMENT
 
                 input:
                 PROCESS_INPUT
@@ -397,6 +396,8 @@ def main():
 
                 script:
                 """
+                ENVIRONMENT
+
                 PROCESS_SCRIPT
                 """
             }
