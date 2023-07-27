@@ -266,7 +266,7 @@ def main():
         node_output = [i for i in node_params.get(
             'output', []) if len(i.strip()) > 0]
         node_envar = [i for i in node_params.get(
-            'env_vars', []) if len(i["key"].strip()) > 0]
+            'env_vars', [])]
 
         if node_filename is not None:
             node_filename = get_full_path(node_filename)
