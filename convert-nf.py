@@ -261,8 +261,10 @@ def main():
         node_runtime = node_params.get('runtime_environment', None)
         node_cpu = node_params.get('cpu', None)
         node_memory = node_params.get('memory', 4)
-        node_input = node_params.get('dependencies', [])
-        node_output = node_params.get('output', [])
+        node_input = [i for i in node_params.get(
+            'dependencies', []) if len(i.strip()) > 0]
+        node_output = [i for i in node_params.get(
+            'output', []) if len(i.strip()) > 0]
         node_envar = node_params.get('env_vars', [])
 
         if node_filename is not None:
@@ -474,8 +476,10 @@ def main():
             raw_chanel = True
             try:
                 for upstream_node in upstream_node_list:
-                    for j in range(len(upstream_node["app_data"]["output"])):
-                        upstream_node_output = upstream_node["app_data"]["output"][j]
+                    upstream_node_output_list = [
+                        i for i in upstream_node["app_data"]["output"] if len(i.strip()) > 0]
+                    for j in range(len(upstream_node_output_list)):
+                        upstream_node_output = upstream_node_output_list[j]
                         if node_input_file == upstream_node_output:
                             logger.info(f'Match processing {node_input_file}')
                             # input file in from previous step
