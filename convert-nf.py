@@ -443,9 +443,9 @@ def main():
                         upstream_node_list.append(upstream_node)
 
         except Exception as e:
-            logging.info('Error when get upstream node', e)
+            logger.info('Error when get upstream node', e)
 
-        logging.info("upstream_node_list", upstream_node_list)
+        logger.info("upstream_node_list", upstream_node_list)
 
         for i in range(len(node_input)):
             node_input_file = node_input[i]
