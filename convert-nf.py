@@ -181,6 +181,30 @@ def get_node_by_id(node_list, id):
     return None
 
 
+def get_node_name(node):
+    node_id = node.get('id', None)
+    node_params = node.get('app_data', {})
+    node_label = node_params.get('label', None)
+    node_filename = node_params.get('filename', None)
+    if node_filename is not None:
+        node_filename = get_full_path(node_filename)
+
+    if node_label == None or len(node_label.strip()) == 0:
+        basename = os.path.basename(node_filename).split(".")[0]
+        node_label = f"{basename}" + "_" + node_id[0:3]
+    else:
+        node_label = node_label + "_" + node_id[0:3]
+
+    node_name = to_camel_case(node_label)
+    return node_name
+
+
+def get_node_process_label(node):
+    node_name = get_node_name(node)
+    process_name = node_name.upper()
+    return process_name
+
+
 def main():
     configure_logging()
 
@@ -244,15 +268,9 @@ def main():
         if node_filename is not None:
             node_filename = get_full_path(node_filename)
 
-        if node_label == None or len(node_label.strip()) == 0:
-            basename = os.path.basename(node_filename).split(".")[0]
-            node_label = f"{basename}" + "_" + node_id[0:3]
-        else:
-            node_label = node_label + "_" + node_id[0:3]
+        node_name = get_node_name(node)
+        process_name = get_node_process_label(node)
 
-        node_name = to_camel_case(node_label)
-
-        process_name = node_name.upper()
         node_import_nf.append(
             'include  { PROCESS_NAME } from "./modules/NODE_NAME"'.replace('PROCESS_NAME', process_name).replace("NODE_NAME", node_name))
 
@@ -443,6 +461,7 @@ def main():
                                                    upstream_node["node_id_ref"])
                     if upstream_node is not None:
                         upstream_node_list.append(upstream_node)
+                        # upstream_node.output  # array string
 
         except Exception as e:
             logger.info(f'Error when get upstream node {e}')
@@ -452,9 +471,23 @@ def main():
         for i in range(len(node_input)):
             node_input_file = node_input[i]
             # check node is step chanel or from previous step
+            raw_chanel = True
+            for upstream_node in upstream_node_list:
+                for i in range(len(upstream_node["output"])):
+                    upstream_node_output = upstream_node["output"][i]
+                    if node_input_file == upstream_node_output:
+                        # input file in from previous step
+                        upstream_node_process_name = get_node_process_label(
+                            upstream_node)
+                        node_chanel_nf.append(
+                            f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{i+1}.collect()')
 
-            node_chanel_nf.append(
-                f'{node_name}_chanel_input{i+1}=Channel.fromPath(params.{node_name}_input{i+1}).toSortedList()')
+                        raw_chanel = False
+                        break
+
+            if raw_chanel:
+                node_chanel_nf.append(
+                    f'{node_name}_chanel_input{i+1}=Channel.fromPath(params.{node_name}_input{i+1}).toSortedList()')
 
         node_chanel_nf_name = [
             f'{node_name}_chanel_input{i+1}' for i in range(len(node_input))]
