@@ -206,18 +206,16 @@ def main():
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
+        logger.info(node)
+
         if node_type != 'execution_node' or node_group is None:
             continue
 
         node_params = node.get('app_data', {})
 
         for (key, value) in node_params.items():
-            print(f'{key}={value}')
+            # print(f'{key}={value}')
             pass
-
-        logger.info({
-            *node_params
-        })
 
         node_label = node_params.get('label', None)
         if node_label == None:
