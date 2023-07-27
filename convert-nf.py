@@ -165,6 +165,15 @@ def get_full_path(path):
     return path
 
 
+def format_print_node(node):
+    ignoreKey = ["ui_data"]
+    beautyNode = {}
+    for key, value in node.items():
+        if not key in ignoreKey:
+            beautyNode[key] = value
+    return beautyNode
+
+
 def main():
     configure_logging()
 
@@ -206,16 +215,15 @@ def main():
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
-        logger.info(node)
+        logger.info("\n----Process node-----")
+        logger.info(format_print_node(node))
 
         if node_type != 'execution_node' or node_group is None:
+            logger.warning(
+                f"Ignore this node because node_type={node_type} and node_group={node_group}")
             continue
 
         node_params = node.get('app_data', {})
-
-        for (key, value) in node_params.items():
-            # print(f'{key}={value}')
-            pass
 
         node_label = node_params.get('label', None)
         if node_label == None:
@@ -309,7 +317,7 @@ def main():
                                 node_runtime, "python")
                             logger.info(
                                 f"Notebook using kernel: {kernel_name} with environment {env_location}")
-                        elif language == "Python":
+                        elif language == "python":
                             kernel_name, _ = prepare_kernel(
                                 node_runtime, "r")
                             logger.info(
@@ -331,14 +339,14 @@ def main():
                         output_notebook
                     ]
 
-                elif node_group == 'r':
+                elif node_group == 'r-node':
                     logger.info('Detected node is R Script node')
                     PROCESS_SCRIPT = [
                         "Rscript",
                         node_filename
                     ]
 
-                elif node_group == 'python':
+                elif node_group == 'python-node':
                     logger.info('Detected node is Python script node')
                     PROCESS_SCRIPT = [
                         "python",
@@ -347,7 +355,7 @@ def main():
 
                 else:
                     raise Exception(
-                        "Invalid node group: notebook-node, r, python")
+                        "Invalid node group: notebook-node, r-node, python-node")
 
                 PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
