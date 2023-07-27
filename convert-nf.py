@@ -429,8 +429,11 @@ def main():
 
         try:
             # array of node
+            try:
+                upstream_inputNodes = node["inputs"][0]["links"]
+            except:
+                pass
 
-            upstream_inputNodes = node["inputs"][0]["links"]
             for upstream_node in upstream_inputNodes:
                 if upstream_node['port_id_ref'] == 'outPort':
                     # find node in upstream_inputNodes
