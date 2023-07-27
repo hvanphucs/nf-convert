@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-'''
-LICENSE INFO
-
-'''
-
 import argparse
 import json
 import logging
@@ -12,6 +7,22 @@ import re
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
+
+logger = logging.getLogger("validate").addHandler(logging.NullHandler())
+
+
+def configure_logging():
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+    # Setup file logging as well
+    # fh = logging.FileHandler(LOG_FILENAME)
+    # fh.setLevel(logging.DEBUG)
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
 
 
 def get_kernel_list():
@@ -52,7 +63,6 @@ def check_exist_kernel(env_location, kernel_type):
 
     kernel_list = get_kernel_list()
     for kernel in kernel_list:
-        print(kernel["location"])
         if env_location in kernel["location"]:
             if "lib/R/bin/R" in kernel["location"]:
                 r_kernel_exist.append(kernel["name"])
@@ -79,17 +89,16 @@ def prepare_kernel(env_location, kernel_type):
         except:
             raise Exception("Enviroment path is invalid")
 
-        print(
+        logger.info(
             f"Installing kernel: {kernel_type} with name {kernel_name}")
 
         if "python" in kernel_type:
-
             procc1 = subprocess.check_output(
                 f'''mamba install -p {env_location} -c anaconda ipykernel''', shell=True)
             procc2 = subprocess.check_output(
                 f'''/miniconda/user/bin/conda run -p {env_location} python -m ipykernel install --name "{kernel_name}" --display-name "{kernel_name}" --user''', shell=True)
+
         elif kernel_type == "r":
-            print("Install r-irkernel in this environment")
             procc1 = subprocess.check_output(
                 f'''mamba install -p {env_location} -c conda-forge r-irkernel''', shell=True)
             procc2 = subprocess.check_output(
@@ -98,17 +107,6 @@ def prepare_kernel(env_location, kernel_type):
         raise Exception("Could prepare this kernel")
 
     return kernel_name, env_location
-
-
-# prepare_kernel("/home/ub-141839-4ad134d845bed82/.conda/envs/test3", "python")
-
-
-def get_logger():
-    FORMAT = '%(asctime)s %(message)s'
-    logging.basicConfig(format=FORMAT)
-    logger = logging.getLogger('convert')
-    logger.setLevel(logging.INFO)
-    return logger
 
 
 def to_camel_case(input_str):
@@ -122,13 +120,13 @@ def to_camel_case(input_str):
 
 def read_params():
     parser = argparse.ArgumentParser(
-        description='Convert elyra pipeline styled json to nextflow pipeline')
+        description='Convert the Elyra pipeline-style JSON to a Nextflow pipeline')
     parser.add_argument('-i', '--input-file', dest='input_file', required=True,
-                        help='Output directory where nextflow pipeline is written')
+                        help='Output directory where Nextflow pipeline is written')
     parser.add_argument('-f', '--force-create', dest='force_create', action='store_true',
                         help='Overwrite existing output directory')
     parser.add_argument('-o', '--output-dir', dest='output_dir', required=True,
-                        help='Output directory where nextflow pipeline is written')
+                        help='Output directory where Nextflow pipeline is written')
 
     args = parser.parse_args()
     return args
@@ -175,8 +173,9 @@ def get_full_path(path):
 
 
 def main():
+    configure_logging()
+
     params = read_params()
-    logger = get_logger()
 
     script_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -286,8 +285,7 @@ def main():
             ])
 
             PROCESS_SCRIPT = f'''
-            echo 123 > output1.txt
-            echo 123 > output2.txt
+            echo "The output of the process is unknown."
             '''
 
             if node_filename.endswith(".ipynb"):
@@ -303,6 +301,7 @@ def main():
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
                 if node_group == 'notebook-node':
+                    logger.info('Detected node is notebook-node')
                     with open(node_filename) as fnotebook:
                         notebook = json.load(fnotebook)
                         language = notebook.get(
@@ -324,22 +323,42 @@ def main():
                             raise Exception(
                                 "Unknown language for this notebook")
 
-                PROCESS_SCRIPT = [
-                    "papermill",
-                    "--cwd", ".",
-                    "--log-output --log-level DEBUG  --request-save-on-cell-execute",
-                    "--autosave-cell-every 10",
-                    "--progress-bar",
-                    "-k", kernel_name,
-                    " ".join(node_params),
-                    node_filename,
-                    output_notebook
-                ]
+                    PROCESS_SCRIPT = [
+                        "papermill",
+                        "--cwd", ".",
+                        "--log-output --log-level DEBUG  --request-save-on-cell-execute",
+                        "--autosave-cell-every 10",
+                        "--progress-bar",
+                        "-k", kernel_name,
+                        " ".join(node_params),
+                        node_filename,
+                        output_notebook
+                    ]
+
+                elif node_group == 'r':
+                    logger.info('Detected node is R Script node')
+                    PROCESS_SCRIPT = [
+                        "Rscript",
+                        node_filename
+                    ]
+
+                elif node_group == 'python':
+                    logger.info('Detected node is Python script node')
+                    PROCESS_SCRIPT = [
+                        "python",
+                        node_filename
+                    ]
+
+                else:
+                    raise Exception(
+                        "Invalid node group: notebook-node, r, python")
+
                 PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
             PROCESS_OUTPUT = "\n".join([
                 f'path "{node_output[i]}"' for i in range(len(node_output))
             ])
+
             content = '''
             process PROCESS_NAME {
                 tag { PROCESS_TAG }
