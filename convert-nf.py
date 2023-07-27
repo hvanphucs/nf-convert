@@ -477,7 +477,7 @@ def main():
                     for j in range(len(upstream_node["output"])):
                         upstream_node_output = upstream_node["output"][j]
                         if node_input_file == upstream_node_output:
-                            logging.info(f'Match processing {node_input_file}')
+                            logger.info(f'Match processing {node_input_file}')
                             # input file in from previous step
                             upstream_node_process_name = get_node_process_label(
                                 upstream_node)
@@ -487,7 +487,7 @@ def main():
                             raw_chanel = False
                             break
             except Exception as e:
-                logging.info(f'Error processing {e}')
+                logger.info(f'Error processing {e}')
 
             if raw_chanel:
                 node_chanel_nf.append(
