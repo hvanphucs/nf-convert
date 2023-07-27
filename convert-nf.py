@@ -394,7 +394,7 @@ def main():
             ENVIRONMENT = ""
             if len(node_envar) > 0:
                 ENVIRONMENT = "\n".join(
-                    [f"{e['key']}='{e['value']}'" for e in node_envar])
+                    [f"{e['key']}='{e['value']}'" for e in node_envar if len(e['key'].strip()) > 0])
 
             LIMIT_MEMORY = ""
             if node_memory:
