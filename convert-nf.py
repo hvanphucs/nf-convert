@@ -486,7 +486,7 @@ def main():
                             upstream_node_process_name = get_node_process_label(
                                 upstream_node)
                             node_chanel_nf.append(
-                                f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{j+1}.collect()')
+                                f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.out.output{j+1}.collect()')
 
                             raw_chanel = False
                             break
