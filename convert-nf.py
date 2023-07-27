@@ -474,8 +474,8 @@ def main():
             raw_chanel = True
             try:
                 for upstream_node in upstream_node_list:
-                    for j in range(len(upstream_node["output"])):
-                        upstream_node_output = upstream_node["output"][j]
+                    for j in range(len(upstream_node["app_data"]["output"])):
+                        upstream_node_output = upstream_node["app_data"]["output"][j]
                         if node_input_file == upstream_node_output:
                             logger.info(f'Match processing {node_input_file}')
                             # input file in from previous step
