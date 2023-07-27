@@ -174,6 +174,13 @@ def format_print_node(node):
     return beautyNode
 
 
+def get_node_by_id(node_list, id):
+    for node in node_list:
+        if node.id == id:
+            return node
+    return None
+
+
 def main():
     configure_logging()
 
@@ -397,7 +404,6 @@ def main():
                 script:
                 """
                 ENVIRONMENT
-
                 PROCESS_SCRIPT
                 """
             }
@@ -419,7 +425,29 @@ def main():
 
         # write workflow chanel
         node_chanel_nf = []
+        upstream_node_list = []
+
+        try:
+            # array of node
+
+            upstream_inputNodes = node["inputs"][0]["links"]
+            for upstream_node in upstream_inputNodes:
+                if upstream_node['port_id_ref'] == 'outPort':
+                    # find node in upstream_inputNodes
+                    upstream_node = get_node_by_id(
+                        upstream_node["node_id_ref"])
+                    if upstream_node['port_id_ref'] is not None:
+                        upstream_node_list.append(upstream_node)
+
+        except Exception as e:
+            logging.info('Error when get upstream node', e)
+
+        logging.info("upstream_node_list", upstream_node_list)
+
         for i in range(len(node_input)):
+            node_input_file = node_input[i]
+            # check node is step chanel or from previous step
+
             node_chanel_nf.append(
                 f'{node_name}_chanel_input{i+1}=Channel.fromPath(params.{node_name}_input{i+1}).toSortedList()')
 
