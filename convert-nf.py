@@ -265,7 +265,8 @@ def main():
             'dependencies', []) if len(i.strip()) > 0]
         node_output = [i for i in node_params.get(
             'output', []) if len(i.strip()) > 0]
-        node_envar = node_params.get('env_vars', [])
+        node_envar = [i for i in node_params.get(
+            'env_vars', []) if len(i["key"].strip()) > 0]
 
         if node_filename is not None:
             node_filename = get_full_path(node_filename)
@@ -394,7 +395,7 @@ def main():
             ENVIRONMENT = ""
             if len(node_envar) > 0:
                 ENVIRONMENT = "\n".join(
-                    [f"{e['key']}='{e['value']}'" for e in node_envar if len(e['key'].strip()) > 0])
+                    [f"{e['key']}='{e['value']}'" for e in node_envar])
 
             LIMIT_MEMORY = ""
             if node_memory:
