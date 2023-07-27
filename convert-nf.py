@@ -364,12 +364,30 @@ def main():
                 f'path "{node_output[i]}"' for i in range(len(node_output))
             ])
 
+            ENVIRONMENT = ""
+            if len(node_envar) > 0:
+                ENVIRONMENT = "\n".join(
+                    [f"{e['key']}={e['value']}" for e in node_envar])
+
+            LIMIT_MEMORY = ""
+            if node_memory:
+                LIMIT_MEMORY = f"memory '{node_memory}GB'"
+
+            LIMIT_CPU = ""
+            if node_cpu:
+                LIMIT_MEMORY = f"cpu {node_cpu}"
+
             content = '''
             process PROCESS_NAME {
                 tag { PROCESS_TAG }
                 PROCESS_LABEL
 
                 conda "PROCESS_CONDA_HOME_DIR"
+
+                LIMIT_MEMORY
+                LIMIT_CPU
+
+                ENVIRONMENT
 
                 input:
                 PROCESS_INPUT
@@ -387,6 +405,9 @@ def main():
             content = content.replace('PROCESS_TAG', PROCESS_TAG)
             content = content.replace('PROCESS_LABEL', PROCESS_LABEL)
             content = content.replace('PROCESS_CONDA_HOME_DIR', node_runtime)
+            content = content.replace('LIMIT_MEMORY', LIMIT_MEMORY)
+            content = content.replace('LIMIT_MEMORY', LIMIT_CPU)
+            content = content.replace('LIMIT_MEMORY', ENVIRONMENT)
             content = content.replace('PROCESS_INPUT', PROCESS_INPUT)
             content = content.replace('PROCESS_OUTPUT', PROCESS_OUTPUT)
             content = content.replace('PROCESS_SCRIPT', PROCESS_SCRIPT)
