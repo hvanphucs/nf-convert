@@ -8,14 +8,13 @@ import shutil
 import subprocess
 from distutils.dir_util import copy_tree
 
-logger = logging.getLogger("validate")
-logger.setLevel(logging.INFO)
+logger = logging.getLogger("validate_pipeline")
 
 
 def configure_logging():
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    logger.setFormatter(formatter)
+    logging.basicConfig(format=formatter)
 
 
 def get_kernel_list():
