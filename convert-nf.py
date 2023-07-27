@@ -226,12 +226,6 @@ def main():
         node_params = node.get('app_data', {})
 
         node_label = node_params.get('label', None)
-        if node_label == None:
-            node_label = "UnLabeled" + "_" + node_id[0:3]
-        else:
-            node_label = node_label + "_" + node_id[0:3]
-
-        node_name = to_camel_case(node_label)
         node_filename = node_params.get('filename', None)
         node_runtime = node_params.get('runtime_environment', None)
         node_cpu = node_params.get('cpu', None)
@@ -242,6 +236,14 @@ def main():
 
         if node_filename is not None:
             node_filename = get_full_path(node_filename)
+
+        if node_label == None or len(node_label.strip()) == 0:
+            basename = os.path.basename(node_filename).split(".")[0]
+            node_label = f"{basename}" + "_" + node_id[0:3]
+        else:
+            node_label = node_label + "_" + node_id[0:3]
+
+        node_name = to_camel_case(node_label)
 
         process_name = node_name.upper()
         node_import_nf.append(
