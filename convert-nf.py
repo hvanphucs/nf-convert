@@ -435,17 +435,18 @@ def main():
                 pass
 
             for upstream_node in upstream_inputNodes:
-                if upstream_node['port_id_ref'] == 'outPort':
-                    # find node in upstream_inputNodes
-                    upstream_node = get_node_by_id(pipeline_data,
-                                                   upstream_node["node_id_ref"])
-                    if upstream_node['port_id_ref'] is not None:
-                        upstream_node_list.append(upstream_node)
+                print(upstream_node)
+                # if upstream_node['port_id_ref'] == 'outPort':
+                #     # find node in upstream_inputNodes
+                #     upstream_node = get_node_by_id(pipeline_data,
+                #                                    upstream_node["node_id_ref"])
+                #     if upstream_node['port_id_ref'] is not None:
+                #         upstream_node_list.append(upstream_node)
 
         except Exception as e:
-            logger.info('Error when get upstream node', e)
+            logger.info(f'Error when get upstream node {e}')
 
-        logger.info("upstream_node_list", upstream_node_list)
+        logger.info(f"upstream_node_list {upstream_node_list}")
 
         for i in range(len(node_input)):
             node_input_file = node_input[i]
