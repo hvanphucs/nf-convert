@@ -388,7 +388,7 @@ def main():
             PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
             PROCESS_OUTPUT = "\n".join([
-                f'path "{node_output[i]}"' for i in range(len(node_output))
+                f'path "{node_output[i]}",  emit: output{i+1}' for i in range(len(node_output))
             ])
 
             ENVIRONMENT = ""
