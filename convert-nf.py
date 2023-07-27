@@ -293,7 +293,6 @@ def main():
             '''
 
             if node_filename.endswith(".ipynb"):
-
                 filename = os.path.basename(node_filename)
                 output_notebook = f"run_{filename}"
                 node_output.append(output_notebook)
@@ -339,23 +338,23 @@ def main():
                         output_notebook
                     ]
 
-                elif node_group == 'r-node':
-                    logger.info('Detected node is R Script node')
-                    PROCESS_SCRIPT = [
-                        "Rscript",
-                        node_filename
-                    ]
+            elif node_group == 'r-node':
+                logger.info('Detected node is R Script node')
+                PROCESS_SCRIPT = [
+                    "Rscript",
+                    node_filename
+                ]
 
-                elif node_group == 'python-node':
-                    logger.info('Detected node is Python script node')
-                    PROCESS_SCRIPT = [
-                        "python",
-                        node_filename
-                    ]
+            elif node_group == 'python-node':
+                logger.info('Detected node is Python script node')
+                PROCESS_SCRIPT = [
+                    "python",
+                    node_filename
+                ]
 
-                else:
-                    raise Exception(
-                        "Invalid node group: notebook-node, r-node, python-node")
+            else:
+                raise Exception(
+                    "Invalid node group: notebook-node, r-node, python-node")
 
                 PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
