@@ -472,18 +472,21 @@ def main():
             node_input_file = node_input[i]
             # check node is step chanel or from previous step
             raw_chanel = True
-            for upstream_node in upstream_node_list:
-                for i in range(len(upstream_node["output"])):
-                    upstream_node_output = upstream_node["output"][i]
-                    if node_input_file == upstream_node_output:
-                        # input file in from previous step
-                        upstream_node_process_name = get_node_process_label(
-                            upstream_node)
-                        node_chanel_nf.append(
-                            f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{i+1}.collect()')
+            try:
+                for upstream_node in upstream_node_list:
+                    for i in range(len(upstream_node["output"])):
+                        upstream_node_output = upstream_node["output"][i]
+                        if node_input_file == upstream_node_output:
+                            # input file in from previous step
+                            upstream_node_process_name = get_node_process_label(
+                                upstream_node)
+                            node_chanel_nf.append(
+                                f'{node_name}_chanel_input{i+1}={upstream_node_process_name}.output{i+1}.collect()')
 
-                        raw_chanel = False
-                        break
+                            raw_chanel = False
+                            break
+            except Exception as e:
+                logging.info(f'Error processing {e}')
 
             if raw_chanel:
                 node_chanel_nf.append(
