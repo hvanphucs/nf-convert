@@ -176,7 +176,7 @@ def format_print_node(node):
 
 def get_node_by_id(node_list, id):
     for node in node_list:
-        if node.id == id:
+        if node["id"] == id:
             return node
     return None
 
