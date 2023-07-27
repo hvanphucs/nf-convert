@@ -429,6 +429,7 @@ def main():
 
         try:
             # array of node
+            upstream_inputNodes = []
             try:
                 upstream_inputNodes = node["inputs"][0]["links"]
             except:
@@ -436,12 +437,12 @@ def main():
 
             for upstream_node in upstream_inputNodes:
                 print(upstream_node)
-                # if upstream_node['port_id_ref'] == 'outPort':
-                #     # find node in upstream_inputNodes
-                #     upstream_node = get_node_by_id(pipeline_data,
-                #                                    upstream_node["node_id_ref"])
-                #     if upstream_node['port_id_ref'] is not None:
-                #         upstream_node_list.append(upstream_node)
+                if upstream_node['port_id_ref'] == 'outPort':
+                    # find node in upstream_inputNodes
+                    upstream_node = get_node_by_id(pipeline_data,
+                                                   upstream_node["node_id_ref"])
+                    if upstream_node['port_id_ref'] is not None:
+                        upstream_node_list.append(upstream_node)
 
         except Exception as e:
             logger.info(f'Error when get upstream node {e}')
