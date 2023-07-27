@@ -12,9 +12,10 @@ logger = logging.getLogger("validate_pipeline")
 
 
 def configure_logging():
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    logging.basicConfig(format=formatter)
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logger = logging.getLogger('validate_pipeline')
+    logger.setLevel(logging.INFO)
 
 
 def get_kernel_list():
