@@ -366,7 +366,7 @@ def main():
 
             ENVIRONMENT = ""
             if len(node_envar) > 0:
-                ENVIRONMENT = "\n".join(
+                ENVIRONMENT = "env:\n" + "\n".join(
                     [f"{e['key']}={e['value']}" for e in node_envar])
 
             LIMIT_MEMORY = ""
@@ -375,7 +375,7 @@ def main():
 
             LIMIT_CPU = ""
             if node_cpu:
-                LIMIT_MEMORY = f"cpu {node_cpu}"
+                LIMIT_MEMORY = f"cpus {node_cpu}"
 
             content = '''
             process PROCESS_NAME {
@@ -406,8 +406,8 @@ def main():
             content = content.replace('PROCESS_LABEL', PROCESS_LABEL)
             content = content.replace('PROCESS_CONDA_HOME_DIR', node_runtime)
             content = content.replace('LIMIT_MEMORY', LIMIT_MEMORY)
-            content = content.replace('LIMIT_MEMORY', LIMIT_CPU)
-            content = content.replace('LIMIT_MEMORY', ENVIRONMENT)
+            content = content.replace('LIMIT_CPU', LIMIT_CPU)
+            content = content.replace('ENVIRONMENT', ENVIRONMENT)
             content = content.replace('PROCESS_INPUT', PROCESS_INPUT)
             content = content.replace('PROCESS_OUTPUT', PROCESS_OUTPUT)
             content = content.replace('PROCESS_SCRIPT', PROCESS_SCRIPT)
