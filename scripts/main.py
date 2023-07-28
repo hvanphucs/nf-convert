@@ -96,8 +96,9 @@ def main():
 
         output = ""
         try:
+            
             output = subprocess.check_output(
-                f"nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
+                f"cd {params.output_dir} && nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
 
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_success'
