@@ -93,8 +93,10 @@ def main():
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'running'
         utils.write_to_checkpoint(params, run_metadata)
+
+        output = ""
         try:
-            subprocess.check_output(
+            output = subprocess.check_output(
                 f"nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
 
             run_metadata["server_time"] = utils.now()
@@ -103,7 +105,7 @@ def main():
         except Exception as e:
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_error'
-            run_metadata["error_message"] = str(e)
+            run_metadata["error_message"] = str(e) + "\n" + str(output)
             utils.write_to_checkpoint(params, run_metadata)
             exit(1)
 
