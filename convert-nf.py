@@ -199,6 +199,18 @@ def get_node_name(node):
     return node_name
 
 
+def get_conda_env_path(env_name):
+    try:
+        conda_info = subprocess.check_output(['conda', 'info', '--json'])
+        conda_info = json.loads(conda_info)
+        envs_dir = conda_info['envs_dirs'][0]  # Get the default envs directory
+        env_path = os.path.join(envs_dir, env_name)
+        return env_path
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
 def get_node_process_label(node):
     node_name = get_node_name(node)
     process_name = node_name.upper()
@@ -259,6 +271,7 @@ def main():
         node_label = node_params.get('label', None)
         node_filename = node_params.get('filename', None)
         node_runtime = node_params.get('runtime_environment', None)
+        node_runtime_yaml = node_params.get('environment_yaml', '')
         node_cpu = node_params.get('cpu', None)
         node_memory = node_params.get('memory', 4)
         node_input = [i for i in node_params.get(
@@ -273,6 +286,26 @@ def main():
 
         node_name = get_node_name(node)
         process_name = get_node_process_label(node)
+
+        if node_runtime == '' and len(node_runtime_yaml) > 10:
+            node_runtime_new_env = f'{node_name}_env'
+            node_runtime_yaml_file = f'{params.output_dir}/env/{node_name}_env.yaml'
+
+            with open(node_runtime_yaml_file, "w") as env_yaml_file:
+                print(node_runtime_yaml.strip(), file=env_yaml_file)
+
+            try:
+                procc = subprocess.check_output(
+                    f'''conda env remove -y --name {node_runtime_new_env} | | true && \
+                    && mamba env create -y -n {node_runtime_new_env} -f {node_runtime_yaml_file} 
+                ''')
+            except Exception as e:
+                logger.info(f'Failed to create node runtime: {e}')
+
+            node_runtime_new_env_path = get_conda_env_path(
+                node_runtime_new_env)
+            if node_runtime_new_env_path is not None:
+                node_runtime = node_runtime_new_env_path
 
         node_import_nf.append(
             'include  { PROCESS_NAME } from "./modules/NODE_NAME"'.replace('PROCESS_NAME', process_name).replace("NODE_NAME", node_name))
@@ -414,7 +447,6 @@ def main():
 
                 LIMIT_MEMORY
                 LIMIT_CPU
-
 
                 input:
                 PROCESS_INPUT
