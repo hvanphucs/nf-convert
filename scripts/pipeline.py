@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 import json
-import logging
 import os
 import shutil
 import subprocess
 
 import kernel
 import utils
-
 
 
 def find_execution_steps(graph):
@@ -90,12 +88,14 @@ def create_nextflow_folder(pipeline_data, params, logger):
     node_workflow_nf = []
 
     for node in pipeline_data:
-        print("!23312312")
+        
         node_id = node.get('id', None)
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
         logger.info("\n----Process node-----")
+        print("123!")
+        
         logger.info(format_print_node(node))
 
         if node_type != 'execution_node' or node_group is None:
