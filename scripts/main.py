@@ -7,7 +7,7 @@ import subprocess
 from distutils.dir_util import copy_tree
 
 import utils
-from pipeline import create_nextflow_folder
+from pipeline import create_nextflow_folder, find_execution_steps
 
 
 def read_params():
@@ -56,7 +56,7 @@ def main():
         pipeline_data = data.get('pipelines')
         logger.info(f'Found  {len(pipeline_data)} pipeline data')
         try:
-            pipeline_data = utils.find_execution_steps(data)
+            pipeline_data = find_execution_steps(data)
         except Exception as e:
             logger.info(f'Failed load pipeline data', e)
             pipeline_data = pipeline_data[0].get('nodes', [])
@@ -74,7 +74,7 @@ def main():
         copy_tree(template_dir, params.output_dir)
     
     utils.write_to_checkpoint(params, run_metadata)
-    
+
     try:
       
         main_nf_path = create_nextflow_folder(pipeline_data, params, logger)
