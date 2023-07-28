@@ -67,6 +67,8 @@ def main():
 
     utils.write_to_checkpoint(params, run_metadata)
     try:
+        logger.info(
+            'Create nextflow folder....')
         main_nf_path = create_nextflow_folder(data, params)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_success'
