@@ -83,8 +83,6 @@ def format_print_node(node):
 
 def create_nextflow_folder(pipeline_data, params):
 
-    
-
     with open(f'{params.output_dir}/template.nf') as f:
         main_nf = f.read()
 
@@ -93,6 +91,7 @@ def create_nextflow_folder(pipeline_data, params):
     node_workflow_nf = []
 
     for node in pipeline_data:
+        print("!23312312")
         node_id = node.get('id', None)
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
