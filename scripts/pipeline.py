@@ -8,7 +8,6 @@ import subprocess
 import kernel
 import utils
 
-logger = logging.getLogger(__name__)
 
 
 def find_execution_steps(graph):
