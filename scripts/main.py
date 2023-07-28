@@ -9,12 +9,6 @@ from distutils.dir_util import copy_tree
 import utils
 from pipeline import create_nextflow_folder
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 
 def read_params():
     parser = argparse.ArgumentParser(
@@ -37,6 +31,12 @@ def read_params():
 
 
 def main():
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
     script_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.abspath(os.path.dirname(script_dir)) + "/template"
     params = read_params()
