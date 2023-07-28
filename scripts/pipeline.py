@@ -81,7 +81,7 @@ def format_print_node(node):
     return beautyNode
 
 
-def create_nextflow_folder(pipeline_data, params):
+def create_nextflow_folder(pipeline_data, params, logger):
 
     with open(f'{params.output_dir}/template.nf') as f:
         main_nf = f.read()
