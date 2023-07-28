@@ -65,36 +65,36 @@ def main():
     with open(params.input_file) as f:
         data = json.load(f)
 
-    utils.write_to_checkpoint(run_metadata)
+    utils.write_to_checkpoint(params, run_metadata)
     try:
         main_nf_path = create_nextflow_folder(data, params)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_success'
-        utils.write_to_checkpoint(run_metadata)
+        utils.write_to_checkpoint(params, run_metadata)
     except Exception as e:
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_failure'
         run_metadata["error_message"] = str(e)
-        utils.write_to_checkpoint(run_metadata)
+        utils.write_to_checkpoint(params, run_metadata)
         exit(1)
 
     if params.run_pipeline:
 
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'running'
-        utils.write_to_checkpoint(run_metadata)
+        utils.write_to_checkpoint(params, run_metadata)
         try:
             subprocess.check_output(
                 f"nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
 
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_success'
-            utils.write_to_checkpoint(run_metadata)
+            utils.write_to_checkpoint(params, run_metadata)
         except Exception as e:
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_error'
             run_metadata["error_message"] = str(e)
-            utils.write_to_checkpoint(run_metadata)
+            utils.write_to_checkpoint(params, run_metadata)
             exit(1)
 
 

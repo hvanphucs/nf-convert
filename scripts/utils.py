@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from datetime import datetime
 
 
@@ -18,8 +18,14 @@ def to_camel_case(input_str):
     return camel_case_str
 
 
-def write_to_checkpoint(file, data):
-    with open(file, 'w') as f:
+def write_to_checkpoint(params, data):
+    checkpoint_dir = f"{params.output_dir}"
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+
+    checkpoint_file = os.path.join(checkpoint_dir, "run.json")
+
+    with open(checkpoint_file, 'w') as f:
         json.dump(data, f, indent=4)
 
 
