@@ -94,7 +94,6 @@ def create_nextflow_folder(pipeline_data, params, logger):
         node_group = node.get('op', None)  # notebook-node
 
         logger.info("\n----Process node-----")
-        print("123!")
         
         logger.info(format_print_node(node))
 

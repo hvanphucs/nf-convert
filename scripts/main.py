@@ -50,6 +50,18 @@ def main():
         'log_message': ''
     }
 
+    
+    with open(params.input_file) as f:
+        data = json.load(f)
+        pipeline_data = data.get('pipelines')
+        logger.info(f'Found  {len(pipeline_data)} pipeline data')
+        try:
+            pipeline_data = utils.find_execution_steps(data)
+        except Exception as e:
+            logger.info(f'Failed load pipeline data', e)
+            pipeline_data = pipeline_data[0].get('nodes', [])
+            exit(1)
+
     if os.path.exists(params.output_dir) and not params.force_create:
         logger.info(
             'Output directory exists. Please remove it before or choose another directory')
@@ -60,16 +72,12 @@ def main():
         except:
             pass
         copy_tree(template_dir, params.output_dir)
-        
-
-    with open(params.input_file) as f:
-        data = json.load(f)
-
+    
     utils.write_to_checkpoint(params, run_metadata)
+    
     try:
-        logger.info(
-            'Create nextflow folder....')
-        main_nf_path = create_nextflow_folder(data, params, logger)
+      
+        main_nf_path = create_nextflow_folder(pipeline_data, params, logger)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_success'
         utils.write_to_checkpoint(params, run_metadata)
