@@ -30,7 +30,7 @@ def get_kernel_list():
                 except Exception as e:
                     logger.warning(f"Failed to load kernel data: {e}")
     except Exception as e:
-        logger.error(f"Error while getting kernel list: {e}")
+        logger.info(f"Error while getting kernel list: {e}")
 
     return kernel_data
 
@@ -68,7 +68,7 @@ def prepare_kernel(env_location, kernel_type):
             kernel_name = env_location.split(
                 "/.conda/envs/")[1] + f"_{kernel_type}"
         except Exception as e:
-            logger.error(f"Invalid environment path: {e}")
+            logger.info(f"Invalid environment path: {e}")
             raise Exception("Environment path is invalid")
 
         logger.info(
@@ -81,7 +81,7 @@ def prepare_kernel(env_location, kernel_type):
                 subprocess.check_output(
                     f'''/miniconda/user/bin/conda run -p {env_location} python -m ipykernel install --name "{kernel_name}" --display-name "{kernel_name}" --user''', shell=True)
             except Exception as e:
-                logger.error(f"Error installing Python kernel: {e}")
+                logger.info(f"Error installing Python kernel: {e}")
                 raise Exception("Failed to install the Python kernel")
 
         elif kernel_type == "r":
@@ -91,7 +91,7 @@ def prepare_kernel(env_location, kernel_type):
                 subprocess.check_output(
                     f'''/miniconda/user/bin/conda run -p {env_location} Rscript -e "IRkernel::installspec(name='{kernel_name}', displayname='{kernel_name}', user=TRUE)"''', shell=True)
             except Exception as e:
-                logger.error(f"Error installing R kernel: {e}")
+                logger.info(f"Error installing R kernel: {e}")
                 raise Exception("Failed to install the R kernel")
     else:
         raise Exception("Could not prepare this kernel")
@@ -107,5 +107,5 @@ def get_conda_env_path(env_name):
         env_path = os.path.join(envs_dir, env_name)
         return env_path
     except Exception as e:
-        logger.error(f"Error when get information environment: {e}")
+        logger.info(f"Error when get information environment: {e}")
         return None

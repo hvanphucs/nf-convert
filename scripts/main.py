@@ -51,7 +51,7 @@ def main():
     }
 
     if os.path.exists(params.output_dir) and not params.force_create:
-        logger.error(
+        logger.info(
             'Output directory exists. Please remove it before or choose another directory')
         exit(1)
     else:

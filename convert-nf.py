@@ -225,7 +225,7 @@ def main():
     script_dir = os.path.abspath(os.path.dirname(__file__))
 
     if os.path.exists(params.output_dir) and not params.force_create:
-        logger.error(
+        logger.info(
             'Output directory exist. Please remove it before or choose other directory')
         exit(1)
     else:
