@@ -32,9 +32,9 @@ def read_params():
 
 def main():
     logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        format="[%(levelname)s][%(asctime)s][%(name)s] -- %(message)s")
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("ConvertPipeline")
     logger.setLevel(logging.INFO)
 
     script_dir = os.path.abspath(os.path.dirname(__file__))
@@ -50,7 +50,6 @@ def main():
         'log_message': ''
     }
 
-    
     with open(params.input_file) as f:
         data = json.load(f)
         pipeline_data = data.get('pipelines')
@@ -72,11 +71,11 @@ def main():
         except:
             pass
         copy_tree(template_dir, params.output_dir)
-    
+
     utils.write_to_checkpoint(params, run_metadata)
 
     try:
-      
+
         main_nf_path = create_nextflow_folder(pipeline_data, params, logger)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_success'
@@ -96,10 +95,8 @@ def main():
 
         output = ""
         try:
-            
             output = subprocess.check_output(
                 f"cd {params.output_dir} && nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
-
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_success'
             utils.write_to_checkpoint(params, run_metadata)

@@ -71,11 +71,12 @@ def get_node_process_label(node):
 
 def format_print_node(node):
     ignoreKey = ["ui_data"]
-    beautyNode = {}
+    filterData = {}
     for key, value in node.items():
         if not key in ignoreKey:
-            beautyNode[key] = value
-    return beautyNode
+            filterData[key] = value
+
+    return json.dumps(filterData, indent=4)
 
 
 def create_nextflow_folder(pipeline_data, params, logger):
@@ -88,13 +89,12 @@ def create_nextflow_folder(pipeline_data, params, logger):
     node_workflow_nf = []
 
     for node in pipeline_data:
-        
+
         node_id = node.get('id', None)
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
         logger.info("\n----Process node-----")
-        
         logger.info(format_print_node(node))
 
         if node_type != 'execution_node' or node_group is None:
