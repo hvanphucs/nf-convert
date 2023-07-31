@@ -221,7 +221,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
                         notebook = json.load(fnotebook)
 
                     language = notebook.get(
-                        'metadata', {}).get('kernelspec', {}).get('language', {})
+                        'metadata', {}).get('kernelspec', {}).get('language', None)
                     logger.info(
                         f'[{node_name}] [Validate notebook] Detected language:  {language}')
                     if language == "R":
@@ -236,7 +236,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
                             f" [Step: {node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     else:
                         raise Exception(
-                            f"[Step: {node_name}] Unknown language for this notebook: {language}")
+                            f"[Step: {node_name}] Unknown language for this notebook: {language}. You must open notebook and select language first")
 
                     PROCESS_SCRIPT = [
                         "papermill",
