@@ -80,6 +80,8 @@ def main():
         run_metadata["status"] = 'prepare_success'
         utils.write_to_checkpoint(params, run_metadata)
     except Exception as e:
+        logger.error(
+            f"Error when convert {e}", stack_info=True, exc_info=True)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_failure'
         run_metadata["error_message"] = str(e)

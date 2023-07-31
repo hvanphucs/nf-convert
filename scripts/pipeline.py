@@ -95,13 +95,14 @@ def create_nextflow_folder(pipeline_data, params, logger):
     node_import_nf = []
     node_workflow_nf = []
 
+    c = 0
     for node in pipeline_data:
-
-        node_id = node.get('id', None)
+        c += 1
+        # node_id = node.get('id', None)
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
-        logger.info("----Process node-----")
+        logger.info(f"----Process node {c+1}/{len(pipeline_data)}-----")
         logger.info(json.dumps(format_node(node), indent=4))
 
         if node_type != 'execution_node' or node_group is None:
@@ -124,6 +125,12 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
         if node_filename is not None:
             node_filename = utils.get_full_path(node_filename)
+
+        # validate
+        if node_filename is None:
+            logger.warning(
+                f"Ignore this node because node_filename={node_filename}")
+            continue
 
         node_name = get_node_name(node)
         process_name = get_node_process_label(node)
@@ -195,7 +202,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
             PROCESS_SCRIPT = f'''
             echo "The output of the process is unknown."
             '''
-
+            logger.info(f'[{node_name}] Write module scripts 1')
             if node_filename.endswith(".ipynb"):
                 filename = os.path.basename(node_filename)
                 output_notebook = f"run_{filename}"
