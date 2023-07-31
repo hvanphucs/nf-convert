@@ -25,4 +25,5 @@ def update_db(run_config, db_file):
     if not existOne:
         current_db.append(run_config)
     with open(db_file, "r") as f:
-        json.dump(current_db, f, indent=4)
+        jsonString = json.dumps(current_db, indent=4)
+        f.write(jsonString)
