@@ -69,14 +69,21 @@ def get_node_process_label(node):
     return process_name
 
 
-def format_print_node(node):
-    ignoreKey = ["ui_data"]
+def format_node(node):
+    ignoreKey = ["ui_data", "parameters", "outputs", "inputs"]
     filterData = {}
     for key, value in node.items():
+        if key == "app_data":
+            valueFilter = {}
+            for k, v in value.items():
+                if k not in ["include_subdirectories", "ui_data", "component_parameters"]:
+                    valueFilter[k] = v
+            filterData[key] = valueFilter
+            continue
         if not key in ignoreKey:
             filterData[key] = value
 
-    return json.dumps(filterData, indent=4)
+    return filterData
 
 
 def create_nextflow_folder(pipeline_data, params, logger):
@@ -94,8 +101,8 @@ def create_nextflow_folder(pipeline_data, params, logger):
         node_type = node.get('type', None)  # execution_node
         node_group = node.get('op', None)  # notebook-node
 
-        logger.info("\n----Process node-----")
-        logger.info(format_print_node(node))
+        logger.info("----Process node-----")
+        logger.info(json.dumps(format_node(node), indent=4))
 
         if node_type != 'execution_node' or node_group is None:
             logger.warning(
@@ -195,33 +202,34 @@ def create_nextflow_folder(pipeline_data, params, logger):
                 node_output.append(output_notebook)
 
                 logger.info(
-                    f'[Validate notebook] {filename}')
+                    f'[{node_name}] [Validate notebook] {filename}')
 
                 node_params = [
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
                 if node_group == 'notebook-node':
-                    logger.info('Detected node is notebook-node')
+                    logger.info(
+                        f'[{node_name}] Detected node is notebook-node')
                     with open(node_filename) as fnotebook:
                         notebook = json.load(fnotebook)
 
                     language = notebook.get(
                         'metadata', {}).get('kernelspec', {}).get('language', {})
                     logger.info(
-                        f'[Validate notebook] Detected language:  {language}')
+                        f'[{node_name}] [Validate notebook] Detected language:  {language}')
                     if language == "R":
                         kernel_name, env_location = kernel.prepare_kernel(
                             node_runtime, "python")
                         logger.info(
-                            f"Notebook using kernel: {kernel_name} with environment {env_location}")
+                            f"[{node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     elif language == "python":
                         kernel_name, _ = kernel.prepare_kernel(
                             node_runtime, "r")
                         logger.info(
-                            f"Notebook using kernel: {kernel_name} with environment {env_location}")
+                            f" [{node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     else:
                         raise Exception(
-                            "Unknown language for this notebook")
+                            f"[{node_name}] Unknown language for this notebook")
 
                     PROCESS_SCRIPT = [
                         "papermill",
@@ -236,14 +244,15 @@ def create_nextflow_folder(pipeline_data, params, logger):
                     ]
 
             elif node_group == 'r-node':
-                logger.info('Detected node is R Script node')
+                logger.info(f'[{node_name}] Detected node is R Script node')
                 PROCESS_SCRIPT = [
                     "Rscript",
                     node_filename
                 ]
 
             elif node_group == 'python-node':
-                logger.info('Detected node is Python script node')
+                logger.info(
+                    f'[{node_name}] Detected node is Python script node')
                 PROCESS_SCRIPT = [
                     "python",
                     node_filename
@@ -251,7 +260,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
             else:
                 raise Exception(
-                    "Invalid node group: notebook-node, r-node, python-node")
+                    f"[{node_name}] Invalid node group: notebook-node, r-node, python-node")
 
             PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
@@ -321,9 +330,9 @@ def create_nextflow_folder(pipeline_data, params, logger):
                 upstream_inputNodes = node["inputs"][0]["links"]
             except:
                 pass
-
+            logger.info(
+                f'[{node_name}] Detected  {len(upstream_inputNodes)} upstream nodes')
             for upstream_node in upstream_inputNodes:
-                print(upstream_node)
                 if upstream_node['port_id_ref'] == 'outPort':
                     # find node in upstream_inputNodes
                     upstream_node = get_node_by_id(pipeline_data,
@@ -334,8 +343,6 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
         except Exception as e:
             logger.info(f'Error when get upstream node {e}')
-
-        logger.info(f"upstream_node_list {upstream_node_list}")
 
         for i in range(len(node_input)):
             node_input_file = node_input[i]
@@ -348,7 +355,8 @@ def create_nextflow_folder(pipeline_data, params, logger):
                     for j in range(len(upstream_node_output_list)):
                         upstream_node_output = upstream_node_output_list[j]
                         if node_input_file == upstream_node_output:
-                            logger.info(f'Match processing {node_input_file}')
+                            logger.info(
+                                f'[{node_name}] Write input upstream nodes: {node_input_file}')
                             # input file in from previous step
                             upstream_node_process_name = get_node_process_label(
                                 upstream_node)
@@ -390,6 +398,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
     shutil.copy(params.input_file, params.output_dir)
 
-    logger.info(f'Finished processing. Output: {params.output_dir}')
+    logger.info(
+        f'\nFinished processing. Output: {os.path.abspath(params.output_dir)}')
 
     return f'{params.output_dir}/main.nf'

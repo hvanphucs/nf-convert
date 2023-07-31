@@ -75,7 +75,6 @@ def main():
     utils.write_to_checkpoint(params, run_metadata)
 
     try:
-
         main_nf_path = create_nextflow_folder(pipeline_data, params, logger)
         run_metadata["server_time"] = utils.now()
         run_metadata["status"] = 'prepare_success'

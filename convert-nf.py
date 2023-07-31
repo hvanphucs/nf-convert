@@ -340,7 +340,7 @@ def main():
         '''
 
         # write workflow submodules
-        logger.info(f'[{node_name}] Write module scripts')
+        logger.info(f'[Node: {node_name}] Write module scripts')
         with open(f"{params.output_dir}/modules/{node_name}.nf", "w") as f:
             PROCESS_TAG = '"running"'
             PROCESS_LABEL = "\n".join([
@@ -500,8 +500,6 @@ def main():
 
         except Exception as e:
             logger.info(f'Error when get upstream node {e}')
-
-        logger.info(f"upstream_node_list {upstream_node_list}")
 
         for i in range(len(node_input)):
             node_input_file = node_input[i]
