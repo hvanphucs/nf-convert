@@ -5,8 +5,8 @@ import logging
 import os
 import subprocess
 from distutils.dir_util import copy_tree
-import db
 
+import db
 import utils
 from pipeline import create_nextflow_folder, find_execution_steps
 
@@ -43,6 +43,9 @@ def main():
 
     logger = logging.getLogger("ConvertPipeline")
     logger.setLevel(logging.INFO)
+    fh = logging.FileHandler('spam.log')
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
 
     script_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.abspath(os.path.dirname(script_dir)) + "/template"

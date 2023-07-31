@@ -13,8 +13,11 @@ def update_db(run_config, db_file):
 
     try:
         with open(db_file, "r") as f:
-            json.load(f)
+            current_db = json.load(f)
+    except:
+        pass
 
+    try:
         for run in current_db:
             if run["run_id"] == run_config["run_id"]:
                 existOne = True
@@ -24,6 +27,7 @@ def update_db(run_config, db_file):
 
     if not existOne:
         current_db.append(run_config)
+
     with open(db_file, "w") as f:
         jsonString = json.dumps(current_db, indent=4)
         f.write(jsonString)
