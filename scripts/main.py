@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 from distutils.dir_util import copy_tree
+import db
 
 import utils
 from pipeline import create_nextflow_folder, find_execution_steps
@@ -45,6 +46,7 @@ def main():
 
     script_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.abspath(os.path.dirname(script_dir)) + "/template"
+
     params = read_params()
 
     with open(params.run_config, 'r') as f:
@@ -62,6 +64,8 @@ def main():
         params.input_file = os.path.join(
             params.home_dir, data['pipeline_path'])
         params.run_id = data['run_id']
+
+        db.update_db(data, os.path.join(params.home_dir, ".ppdb/db.json"))
 
     run_metadata = {
         'run_id': params.run_id,
