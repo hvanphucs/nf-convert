@@ -14,7 +14,7 @@ def read_params():
     parser = argparse.ArgumentParser(
         description='Convert the Elyra pipeline-style JSON to a Nextflow pipeline')
     parser.add_argument(
-        '-i', '--input-file', dest='input_file', required=True, help='Input JSON file representing the Elyra pipeline')
+        '-i', '--input-file', dest='input_file', required=False, help='Input JSON file representing the Elyra pipeline')
     parser.add_argument(
         '-f', '--force-create', dest='force_create', action='store_true', help='Overwrite existing output directory')
 
@@ -22,7 +22,13 @@ def read_params():
         '-r', '--run-pipeline', dest='run_pipeline', action='store_true', help='After creating the pipeline, run the pipeline')
 
     parser.add_argument(
-        '-o', '--output-dir', dest='output_dir', required=True, help='Output directory where Nextflow pipeline will be written')
+        '-o', '--output-dir', dest='output_dir', required=False, help='Output directory where Nextflow pipeline will be written')
+
+    parser.add_argument(
+        '--home-dir', dest='home_dir', required=True, help='User Home directory')
+
+    parser.add_argument(
+        '--run-config', dest='run_config', required=True, help='Run config file')
 
     parser.add_argument(
         '--run-id', dest='run_id', help='Unique identifier for each runtime pipeline', default="Unknown")
@@ -40,6 +46,22 @@ def main():
     script_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.abspath(os.path.dirname(script_dir)) + "/template"
     params = read_params()
+
+    with open(params.run_config, 'r') as f:
+        data = json.load(f)
+        # run_id:"pipeline_5hasl371j6ukshy3ycet5q"
+        # run_name:"test123"
+        # description:""
+        # working_dir:"workflow/test5"
+        # pipeline_name:"untitled2.pipeline"
+        # pipeline_rev:"0"
+        # status:"submitted"
+        # created_at:1690792995261
+
+        params.output_dir = os.path.join(params.home_dir, data['working_dir'])
+        params.input_file = os.path.join(
+            params.home_dir, data['pipeline_path'])
+        params.run_id = data['run_id']
 
     run_metadata = {
         'run_id': params.run_id,
