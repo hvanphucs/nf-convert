@@ -209,14 +209,14 @@ def create_nextflow_folder(pipeline_data, params, logger):
                 node_output.append(output_notebook)
 
                 logger.info(
-                    f'[{node_name}] [Validate notebook] {filename}')
+                    f'[Step: {node_name}] [Validate notebook] {filename}')
 
                 node_params = [
                     f"-p {param['key']} '{param['value']}'" for param in node_envar]
 
                 if node_group == 'notebook-node':
                     logger.info(
-                        f'[{node_name}] Detected node is notebook-node')
+                        f'[Step: {node_name}] Detected node is notebook-node')
                     with open(node_filename) as fnotebook:
                         notebook = json.load(fnotebook)
 
@@ -233,10 +233,10 @@ def create_nextflow_folder(pipeline_data, params, logger):
                         kernel_name, _ = kernel.prepare_kernel(
                             node_runtime, "r")
                         logger.info(
-                            f" [{node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
+                            f" [Step: {node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     else:
                         raise Exception(
-                            f"[{node_name}] Unknown language for this notebook")
+                            f"[Step: {node_name}] Unknown language for this notebook: {language}")
 
                     PROCESS_SCRIPT = [
                         "papermill",
@@ -251,7 +251,8 @@ def create_nextflow_folder(pipeline_data, params, logger):
                     ]
 
             elif node_group == 'r-node':
-                logger.info(f'[{node_name}] Detected node is R Script node')
+                logger.info(
+                    f'[Step: {node_name}] Detected node is R Script node')
                 PROCESS_SCRIPT = [
                     "Rscript",
                     node_filename
@@ -259,7 +260,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
             elif node_group == 'python-node':
                 logger.info(
-                    f'[{node_name}] Detected node is Python script node')
+                    f'[Step: {node_name}] Detected node is Python script node')
                 PROCESS_SCRIPT = [
                     "python",
                     node_filename
@@ -267,7 +268,7 @@ def create_nextflow_folder(pipeline_data, params, logger):
 
             else:
                 raise Exception(
-                    f"[{node_name}] Invalid node group: notebook-node, r-node, python-node")
+                    f"[Step: {node_name}] Invalid node group: notebook-node, r-node, python-node")
 
             PROCESS_SCRIPT = " ".join(PROCESS_SCRIPT)
 
