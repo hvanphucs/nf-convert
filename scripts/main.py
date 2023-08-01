@@ -33,6 +33,9 @@ def read_params():
 
     parser.add_argument(
         '--run-id', dest='run_id', help='Unique identifier for each runtime pipeline', default="Unknown")
+
+    parser.add_argument(
+        '--append-log', dest='append_log', help='Append log file for each runtime pipeline', default="run.log")
     args = parser.parse_args()
     return args
 
@@ -126,7 +129,7 @@ def main():
         output = ""
         try:
             output = subprocess.check_output(
-                f"cd {params.output_dir} && nextflow run {main_nf_path} -with-dag -profile conda ", shell=True)
+                f"cd {params.output_dir} && nextflow run {main_nf_path} -with-dag -profile conda >>{params.append_log} 2>&1 ", shell=True)
             run_metadata["server_time"] = utils.now()
             run_metadata["status"] = 'run_success'
             utils.write_to_checkpoint(params, run_metadata)
