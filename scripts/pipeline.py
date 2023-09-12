@@ -226,12 +226,12 @@ def create_nextflow_folder(pipeline_data, params, logger):
                         f'[{node_name}] [Validate notebook] Detected language:  {language}')
                     if language == "R":
                         kernel_name, env_location = kernel.prepare_kernel(
-                            node_runtime, "python")
+                            node_runtime, "r")
                         logger.info(
                             f"[{node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     elif language == "python":
-                        kernel_name, _ = kernel.prepare_kernel(
-                            node_runtime, "r")
+                        kernel_name, env_location = kernel.prepare_kernel(
+                            node_runtime, "python")
                         logger.info(
                             f" [Step: {node_name}] Notebook using kernel: {kernel_name} with environment {env_location}")
                     else:
